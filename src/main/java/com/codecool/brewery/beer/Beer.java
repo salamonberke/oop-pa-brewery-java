@@ -7,11 +7,11 @@ import java.time.LocalDate;
  * This is a basic implementation - you need to extend this to support different beer types.
  */
 public abstract class Beer {
-    String name;
-    double alcoholContent;
-    LocalDate productionDate;
+    private final String name;
+    private final double alcoholContent;
+    private final LocalDate productionDate;
 
-    Beer(String name, double alcoholContent, LocalDate productionDate) {
+    public Beer(String name, double alcoholContent, LocalDate productionDate) {
         this.name = name;
         this.alcoholContent = alcoholContent;
         this.productionDate = productionDate;
@@ -23,8 +23,14 @@ public abstract class Beer {
 
     // TODO: Add method to get storage temperature requirement
     // TODO: Consider canBeStoredAt method may accept parameters for temperature checks
-    public abstract boolean canBeStoredAt(double temperature);
+    public abstract boolean canBeStoredAt();
 
     // TODO: Add method to get fermentation days
     public abstract int getFermentationDays();
+
+    public LocalDate getProductionDate() { return this.productionDate; }
+
+    public double getAlcoholContent() { return this.alcoholContent; }
+
+    public String getName() { return this.name; }
 }

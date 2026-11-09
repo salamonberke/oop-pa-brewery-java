@@ -1,32 +1,56 @@
 package com.codecool.brewery;
 
+import com.codecool.brewery.beer.Beer;
 import com.codecool.brewery.brewer.Brewer;
+import com.codecool.brewery.brewer.HelperBrewer;
+import com.codecool.brewery.brewer.MasterBrewer;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Represents a brewery that manages beer production and staff.
  * Many methods are incomplete and need to be implemented.
  */
-class Brewery {
-    String name;
-    List<Brewer> brewers;
+public class Brewery {
+    private final String name;
+    private final List<Brewer> brewers;
+    private final Map<Beer, Integer> stock;
 
-    Brewery(String name) {}
-
-    void addBrewer() {
-        // TODO: Implement proper null checking and validation
-        // TODO: add brewer to brewers list
+    public Brewery(String name) {
+        this.name = name;
+        brewers = new ArrayList<>();
+        stock = new HashMap<>();
     }
 
-    void addBeerToStock() {
-        // TODO: Implement proper null checking and validation
-        // TODO: add beer to stock
+    public void addBrewer(Brewer brewer) {
+        if (brewer == null) {
+            throw new IllegalArgumentException("Brewer cannot be null");
+        }
+
+        if (getMasterBrewer() != null && brewer instanceof MasterBrewer) {
+            throw new IllegalArgumentException("Only one Master Brewer is allowed");
+        }
+        brewers.add(brewer);
+    }
+
+    public void addBeerToStock(Beer beer, int liters) {
+        if (beer == null) {
+            throw new IllegalArgumentException("Beer cannot be null");
+        }
+
+        if (liters <= 0) {
+            throw new IllegalArgumentException("Liters has to be more than 0");
+        }
+
+        if (stock.containsKey(beer)) {
+            stock.put(beer, stock.get(beer) + liters);
+        } else {
+            stock.put(beer, liters);
+        }
     }
 
     /**
@@ -36,7 +60,25 @@ class Brewery {
      * - What happens if there's not enough quantity?
      * - Should this modify the stock?
      */
-    void retrieveBeerFromStock() {
+    public void retrieveBeerFromStock(Beer beer, int liters) {
+        if (beer == null) {
+            throw new IllegalArgumentException("Beer cannot be null");
+        }
+
+        if (liters <= 0) {
+            throw new IllegalArgumentException("Liters has to be more than 0");
+        }
+
+        if (!stock.containsKey(beer)) {
+            throw new IllegalArgumentException("Beer is not in stock");
+        }
+
+        if (stock.get(beer) < liters) {
+            throw new IllegalArgumentException("Not enough beer available");
+        }
+
+        stock.put(beer, stock.get(beer) - liters);
+
         // TODO: Implement
     }
 
@@ -49,8 +91,15 @@ class Brewery {
      * - Return the sum of helper counts across all days
      */
     public int calculateProductionCapacity(List<DayOfWeek> days) {
-        // TODO: Implement
-        return 0;
+        MasterBrewer masterBrewer = getMasterBrewer();
+        int numOfHelpers = 0;
+
+        for (DayOfWeek day : days) {
+            if (masterBrewer != null && masterBrewer.isAvailableOn(day)) {
+                numOfHelpers += countAvailableHelpers(day);
+            }
+        }
+        return numOfHelpers;
     }
 
     /**
@@ -60,8 +109,13 @@ class Brewery {
      * - Return collection of beer names
      */
     public List<String> findMaturedBeers() {
-        // TODO: Implement
-        return null;
+        List<Beer> matureBeers = stock.keySet().stream()
+                .filter(beer -> ChronoUnit.DAYS.between(beer.getProductionDate(), LocalDate.now()) >= 180)
+                .toList();
+
+        return matureBeers.stream()
+                .map(beer -> beer.getName())
+                .toList();
     }
 
     /**
@@ -140,6 +194,21 @@ class Brewery {
      */
     // TODO: Implement countAvailableHelpers method
     private int countAvailableHelpers(DayOfWeek day) {
-        return 0;
+        int numOfAvailableHelpers = 0;
+        for (Brewer brewer : brewers) {
+            if (brewer instanceof HelperBrewer && brewer.isAvailableOn(day)) {
+                numOfAvailableHelpers++;
+            }
+        }
+        return numOfAvailableHelpers;
+    }
+
+    private MasterBrewer getMasterBrewer() {
+        for (Brewer brewer : brewers) {
+            if (brewer instanceof MasterBrewer) {
+                return (MasterBrewer) brewer;
+            }
+        }
+        return null;
     }
 }
