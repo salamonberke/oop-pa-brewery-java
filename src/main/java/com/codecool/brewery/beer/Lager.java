@@ -10,12 +10,12 @@ public class Lager extends Beer{
 
     @Override
     public int getDaysUntilReady() {
-        return (int) ChronoUnit.DAYS.between(getProductionDate(), LocalDate.now());
+        return Math.max(0, getFermentationDays() - (int) ChronoUnit.DAYS.between(getProductionDate(), LocalDate.now()));
     }
 
     @Override
-    public boolean canBeStoredAt() {
-        return getAlcoholContent() < 5;
+    public boolean canBeStoredAt(int temperature) {
+        return temperature < 5;
     }
 
     @Override

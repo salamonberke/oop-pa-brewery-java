@@ -13,8 +13,12 @@ public abstract class Beer {
 
     public Beer(String name, double alcoholContent, LocalDate productionDate) {
         this.name = name;
-        this.alcoholContent = alcoholContent;
         this.productionDate = productionDate;
+
+        if (alcoholContent < 0 || alcoholContent > 100) {
+            throw new IllegalArgumentException("Invalid alcohol content");
+        }
+        this.alcoholContent = alcoholContent;
     }
 
     // TODO: Add method to calculate days until beer is ready for sale
@@ -23,7 +27,7 @@ public abstract class Beer {
 
     // TODO: Add method to get storage temperature requirement
     // TODO: Consider canBeStoredAt method may accept parameters for temperature checks
-    public abstract boolean canBeStoredAt();
+    public abstract boolean canBeStoredAt(int temperature);
 
     // TODO: Add method to get fermentation days
     public abstract int getFermentationDays();

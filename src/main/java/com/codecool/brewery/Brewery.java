@@ -114,7 +114,7 @@ public class Brewery {
                 .toList();
 
         return matureBeers.stream()
-                .map(beer -> beer.getName())
+                .map(Beer::getName)
                 .toList();
     }
 
@@ -169,7 +169,7 @@ public class Brewery {
     /**
      * Helper method to get days in a range.
      */
-    private List<DayOfWeek> getDaysInRange(DayOfWeek start, DayOfWeek end) {
+    public List<DayOfWeek> getDaysInRange(DayOfWeek start, DayOfWeek end) {
         List<DayOfWeek> days = new ArrayList<>();
         DayOfWeek current = start;
 
@@ -203,7 +203,7 @@ public class Brewery {
         return numOfAvailableHelpers;
     }
 
-    private MasterBrewer getMasterBrewer() {
+    public MasterBrewer getMasterBrewer() {
         for (Brewer brewer : brewers) {
             if (brewer instanceof MasterBrewer) {
                 return (MasterBrewer) brewer;
