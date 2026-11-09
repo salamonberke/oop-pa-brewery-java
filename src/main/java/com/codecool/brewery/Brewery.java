@@ -15,12 +15,17 @@ import java.util.stream.Collectors;
  * Represents a brewery that manages beer production and staff.
  * Many methods are incomplete and need to be implemented.
  */
+
 public class Brewery {
     private final String name;
     private final List<Brewer> brewers;
     private final Map<Beer, Integer> stock;
 
     public Brewery(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be empty");
+        }
+
         this.name = name;
         brewers = new ArrayList<>();
         stock = new HashMap<>();
@@ -55,11 +60,12 @@ public class Brewery {
 
     /**
      * Retrieves a specific quantity of beer from stock.
-     * TODO: Implement this method with proper error handling
+     * Implement this method with proper error handling
      * - What happens if the beer doesn't exist?
      * - What happens if there's not enough quantity?
      * - Should this modify the stock?
      */
+
     public void retrieveBeerFromStock(Beer beer, int liters) {
         if (beer == null) {
             throw new IllegalArgumentException("Beer cannot be null");
@@ -77,19 +83,21 @@ public class Brewery {
             throw new IllegalArgumentException("Not enough beer available");
         }
 
-        stock.put(beer, stock.get(beer) - liters);
-
-        // TODO: Implement
+        if (stock.get(beer) == liters) {
+            stock.remove(beer);
+        } else {
+            stock.put(beer, stock.get(beer) - liters);
+        }
     }
 
     /**
      * Calculates the total production capacity across specific days.
      * Each day is independent - beer can be produced in a single day.
-     * TODO: Implement this method
      * - Find the master brewer
      * - Count available helpers on each specified day
      * - Return the sum of helper counts across all days
      */
+
     public int calculateProductionCapacity(List<DayOfWeek> days) {
         MasterBrewer masterBrewer = getMasterBrewer();
         int numOfHelpers = 0;
@@ -104,10 +112,11 @@ public class Brewery {
 
     /**
      * Finds beers that are past their prime (older than 180 days).
-     * TODO: Implement this method using Stream API
+     * Implement this method using Stream API
      * - Filter beers by age
      * - Return collection of beer names
      */
+
     public List<String> findMaturedBeers() {
         List<Beer> matureBeers = stock.keySet().stream()
                 .filter(beer -> ChronoUnit.DAYS.between(beer.getProductionDate(), LocalDate.now()) >= 180)
@@ -122,6 +131,7 @@ public class Brewery {
      * Finds the optimal days for production within a given range.
      * Returns days with maximum helper availability.
      */
+
     public List<String> findOptimalProductionDays(String startDayName, String endDayName) {
         DayOfWeek startDay = parseDayOfWeek(startDayName);
         DayOfWeek endDay = parseDayOfWeek(endDayName);
@@ -158,6 +168,7 @@ public class Brewery {
     /**
      * Helper method to parse day names.
      */
+
     private DayOfWeek parseDayOfWeek(String dayName) {
         try {
             return DayOfWeek.valueOf(dayName.toUpperCase());
@@ -169,6 +180,7 @@ public class Brewery {
     /**
      * Helper method to get days in a range.
      */
+
     public List<DayOfWeek> getDaysInRange(DayOfWeek start, DayOfWeek end) {
         List<DayOfWeek> days = new ArrayList<>();
         DayOfWeek current = start;
@@ -192,7 +204,7 @@ public class Brewery {
     /**
      * Counts available helpers on a specific day.
      */
-    // TODO: Implement countAvailableHelpers method
+
     private int countAvailableHelpers(DayOfWeek day) {
         int numOfAvailableHelpers = 0;
         for (Brewer brewer : brewers) {

@@ -120,7 +120,8 @@ class BreweryTest {
     @Test
     @DisplayName("Helper brewer availability is correct")
     void testHelperBrewerAvailability() {
-        assertEquals("Master John", brewery.getMasterBrewer().getName());
+        HelperBrewer testHelper = new HelperBrewer("Test helper", 0, List.of( DayOfWeek.MONDAY, DayOfWeek.TUESDAY));
+        assertTrue(testHelper.isAvailableOn(DayOfWeek.MONDAY));
+        assertFalse(testHelper.isAvailableOn(DayOfWeek.FRIDAY));
     }
-
 }
