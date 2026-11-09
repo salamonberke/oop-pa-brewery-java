@@ -1,4 +1,5 @@
 package com.codecool.brewery;
+import com.codecool.brewery.brewer.Brewer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;

@@ -1,5 +1,7 @@
 package com.codecool.brewery;
 
+import com.codecool.brewery.brewer.Brewer;
+
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Collections;
