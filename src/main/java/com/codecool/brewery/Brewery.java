@@ -307,4 +307,8 @@ public class Brewery {
         double avg = brewers.stream().reduce(0, (total, brewer) -> total + brewer.getYearsOfExperience(), Integer::sum);
         return avg / brewers.size();
     }
+
+    public List<Beer> getBeersReadyForSale() {
+        return stock.keySet().stream().filter(beer -> beer.getDaysUntilReady() == 0).toList();
+    }
 }
