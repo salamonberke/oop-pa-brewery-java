@@ -11,7 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -123,5 +126,138 @@ class BreweryTest {
         HelperBrewer testHelper = new HelperBrewer("Test helper", 0, List.of( DayOfWeek.MONDAY, DayOfWeek.TUESDAY));
         assertTrue(testHelper.isAvailableOn(DayOfWeek.MONDAY));
         assertFalse(testHelper.isAvailableOn(DayOfWeek.FRIDAY));
+    }
+
+    // PRACTICE 1
+
+    @Test
+    void testFindBeersWithAlcoholAbove() {
+        Lager test1 = new Lager("Test 1", 5, LocalDate.of(2026, 10, 1));
+        Lager test2 = new Lager("Test 2", 10, LocalDate.of(2026, 9, 1));
+        Lager test3 = new Lager("Test 3", 20, LocalDate.of(2026, 8, 1));
+
+        brewery.addBeerToStock(test1, 1);
+        brewery.addBeerToStock(test2, 1);
+        brewery.addBeerToStock(test3, 1);
+
+        List<Beer> beers = brewery.findBeersWithAlcoholAbove(8);
+
+        assertFalse(beers.contains(test1));
+        assertTrue(beers.contains(test2));
+        assertTrue(beers.contains(test3));
+    }
+
+    @Test
+    void testFindOldestBeer() {
+        // empty stock
+        assertEquals(Optional.empty(), brewery.findOldestBeer());
+
+        // beer in stock
+        Lager test1 = new Lager("Test 1", 5, LocalDate.of(2026, 10, 1));
+        Lager test2 = new Lager("Test 2", 10, LocalDate.of(2026, 9, 1));
+        Lager test3 = new Lager("Test 3", 20, LocalDate.of(2026, 8, 1));
+
+        brewery.addBeerToStock(test1, 1);
+        brewery.addBeerToStock(test2, 1);
+        brewery.addBeerToStock(test3, 1);
+
+        Optional<Beer> oldestBeer = brewery.findOldestBeer();
+        assertEquals(Optional.of(test3), oldestBeer);
+    }
+
+    @Test
+    void testCalculateAverageAlcoholContent() {
+        // empty stock
+        assertEquals(0, brewery.calculateAverageAlcoholContent());
+
+        // beer in stock
+        Lager test1 = new Lager("Test 1", 3, LocalDate.of(2026, 10, 1));
+        Lager test2 = new Lager("Test 2", 6, LocalDate.of(2026, 9, 1));
+        Lager test3 = new Lager("Test 3", 21, LocalDate.of(2026, 8, 1));
+
+        brewery.addBeerToStock(test1, 1);
+        brewery.addBeerToStock(test2, 1);
+        brewery.addBeerToStock(test3, 1);
+
+        double averageAlcoholContent = brewery.calculateAverageAlcoholContent();
+        assertEquals(10, averageAlcoholContent);
+    }
+
+    // PRACTICE 2
+
+    @Test
+    void testCalculateTotalStock() {
+        // empty stock
+        assertEquals(0, brewery.calculateTotalStock());
+
+        // beer in stock
+        Lager test1 = new Lager("Test 1", 3, LocalDate.of(2026, 10, 1));
+        Lager test2 = new Lager("Test 2", 6, LocalDate.of(2026, 9, 1));
+        Lager test3 = new Lager("Test 3", 21, LocalDate.of(2026, 8, 1));
+
+        brewery.addBeerToStock(test1, 5);
+        brewery.addBeerToStock(test2, 10);
+        brewery.addBeerToStock(test3, 20);
+
+        int totalStock = brewery.calculateTotalStock();
+        assertEquals(35, totalStock);
+    }
+
+    @Test
+    void testFindBeerWithHighestStock() {
+        // empty stock
+        assertEquals(Optional.empty(), brewery.findBeerWithHighestStock());
+
+        // beer in stock
+        Lager test1 = new Lager("Test 1", 3, LocalDate.of(2026, 10, 1));
+        Lager test2 = new Lager("Test 2", 6, LocalDate.of(2026, 9, 1));
+        Lager test3 = new Lager("Test 3", 21, LocalDate.of(2026, 8, 1));
+
+        brewery.addBeerToStock(test1, 5);
+        brewery.addBeerToStock(test2, 10);
+        brewery.addBeerToStock(test3, 20);
+
+        Optional<Beer> beer = brewery.findBeerWithHighestStock();
+        assertEquals(Optional.of(test3), beer);
+    }
+
+    @Test
+    void testGetStockSortedByQuantity() {
+        // beer in stock
+        Lager test1 = new Lager("Test 1", 3, LocalDate.of(2026, 10, 1));
+        Lager test2 = new Lager("Test 2", 6, LocalDate.of(2026, 9, 1));
+        Lager test3 = new Lager("Test 3", 21, LocalDate.of(2026, 8, 1));
+
+        brewery.addBeerToStock(test1, 5);
+        brewery.addBeerToStock(test2, 10);
+        brewery.addBeerToStock(test3, 20);
+
+        Map<Beer, Integer> sortedBeers = brewery.getStockSortedByQuantity();
+        List<Beer> beers = new ArrayList<>(sortedBeers.keySet());
+
+        assertEquals(test3, beers.getFirst());
+        assertEquals(test1, beers.getLast());
+    }
+
+    // PRACTICE 3
+
+    @Test
+    void testFindAvailableBrewers() {
+        HelperBrewer testHelper1 = new HelperBrewer("Test helper", 0, List.of(DayOfWeek.MONDAY));
+        HelperBrewer testHelper2 = new HelperBrewer("Test helper", 0, List.of(DayOfWeek.TUESDAY));
+
+        brewery.addBrewer(testHelper1);
+        brewery.addBrewer(testHelper2);
+
+        List<Brewer> availableBrewers = brewery.findAvailableBrewers(DayOfWeek.MONDAY);
+
+        assertTrue(availableBrewers.contains(testHelper1));
+        assertFalse(availableBrewers.contains(testHelper2));
+    }
+
+    @Test
+    void testFindMostExperiencedBrewers() {
+        Brewer mostExperiencedBrewer = brewery.findMostExperiencedBrewers();
+        assertEquals("Master John", mostExperiencedBrewer.getName());
     }
 }

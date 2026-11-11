@@ -9,6 +9,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -222,5 +223,88 @@ public class Brewery {
             }
         }
         return null;
+    }
+
+    // PRACTICE 1
+
+    public List<Beer> findBeersWithAlcoholAbove(double percentage) {
+        if (percentage < 0 || percentage > 100) {
+            throw new IllegalArgumentException("Invalid percentage");
+        }
+        return stock.keySet().stream().filter(beer -> beer.getAlcoholContent() > percentage).toList();
+    }
+
+    public Optional<Beer> findOldestBeer() {
+        if (stock.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Beer oldestBeer = null;
+        for (Beer beer : stock.keySet()) {
+            if (oldestBeer == null || beer.getProductionDate().isBefore(oldestBeer.getProductionDate())) {
+                oldestBeer = beer;
+
+            }
+        }
+        return Optional.of(oldestBeer);
+    }
+
+    public double calculateAverageAlcoholContent() {
+        if (stock.isEmpty()) {
+            return 0;
+        }
+        // double totalAlcoholContent = stock.keySet().stream().reduce(0, (total, beer) -> total + beer.getAlcoholContent(), Integer::sum);
+        double totalAlcoholContent = 0;
+        for (Beer beer : stock.keySet()) {
+            totalAlcoholContent += beer.getAlcoholContent();
+        }
+        return totalAlcoholContent / stock.size();
+    }
+
+    // PRACTICE 2
+
+    public int calculateTotalStock() {
+        if (stock.isEmpty()) {
+            return 0;
+        }
+         return stock.keySet().stream().reduce(0, (total, beer) -> total + stock.get(beer), Integer::sum);
+    }
+
+    public Optional<Beer> findBeerWithHighestStock() {
+        if (stock.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(stock.keySet().stream().max(Comparator.comparingInt(stock::get)).orElse(null));
+    }
+
+    public Map<Beer, Integer> getStockSortedByQuantity() {
+        return stock.keySet().stream()
+                .sorted(Comparator.comparingInt(stock::get).reversed())
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        stock::get,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
+
+    // PRACTICE 3
+
+    public List<Brewer> findAvailableBrewers(DayOfWeek day) {
+        return brewers.stream().filter(brewer -> brewer.isAvailableOn(day)).toList();
+    }
+
+    public Brewer findMostExperiencedBrewers() {
+        return brewers.stream().max(Comparator.comparingInt(Brewer::getYearsOfExperience)).orElse(null);
+
+    }
+
+    public double calculateAverageExperience() {
+        if (brewers.isEmpty()) {
+            return 0;
+        }
+        
+        double avg = brewers.stream().reduce(0, (total, brewer) -> total + brewer.getYearsOfExperience(), Integer::sum);
+        return avg / brewers.size();
     }
 }
